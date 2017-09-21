@@ -32,7 +32,9 @@ app.post('/login' , Auth.handleLogin, (req, res) => {
 //Handle html for login page
 app.get('/login',
 (req, res) => {
-  res.render('login');
+  res.render('login', {
+        myVar: false
+    });
 });
 
 //Handle html for sign up page'

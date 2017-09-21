@@ -13,5 +13,17 @@
     </div>
 </form>
 <p>
-  <a href="/signup">Create an Account &rarr;</a>
+  <a id="create" href="/signup" >Create an Account &rarr;</a>
+  <script>
+    var myVar = <%- myVar %> || false;
+    console.log(myVar);
+    if(myVar){
+      //Alert the user of the wrong credentials
+      window.alert('You have entered the wrong credentials');
+      //document.getElementById("create").style.visibility = "hidden";
+    }
+  </script>
+
 <p>
+  <div>
+  </div>

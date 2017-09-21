@@ -62,8 +62,17 @@ module.exports.handleLogin = (req, res, next) => {
             }
             else {
                 //The password was wrong redirect user
-                res.redirect('login');
+                //If login fails
+                res.render('login', {
+                      myVar: true
+                  });
             }
+        })
+        .catch(() => {
+          console.log("The user does not exist");
+          res.render('login', {
+                myVar: true
+            });
         })
 };
 
