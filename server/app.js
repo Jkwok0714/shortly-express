@@ -17,6 +17,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
+app.use(Auth.logActivity);
+
 //Add Cookie parse for every request
 //app.use(cookieParser);
 
@@ -26,34 +28,22 @@ app.post('/login' , Auth.handleLogin, (req, res) => {
   res.redirect('index');
 })
 
+
 //Handle html for login page
-app.get('/login', 
+app.get('/login',
 (req, res) => {
-  //Create cookie for login session
   res.render('login');
 });
 
 //Handle html for sign up page'
-app.get('/signup', 
+app.get('/signup',
 (req, res) => {
   res.render('signup');
 });
 
 //Handle sign up post
-app.post('/signup', (req, res) =>{
-  console.log(req.body);
-
-  var { username, password } = req.body;
-
-  //Create and save user
-  models.Users.create({ username, password })
-    .then((result) => {
-      console.log('The user was created successfully');
-      res.redirect('index');
-    }) //Log success, take user to index page
-    .catch((err) => {
-      console.log(err);
-    })
+app.post('/signup', Auth.handleSignUp , (req, res) =>{
+  res.redirect('index');
 })
 
 //Handle html for main page
@@ -67,6 +57,7 @@ app.get('/create', cookieParser,
 (req, res) => {
   res.render('index');
 });
+
 
 app.get('/links', cookieParser,
 (req, res, next) => {
@@ -119,6 +110,11 @@ app.post('/links', cookieParser,
 // Write your authentication routes here
 /************************************************************/
 
+app.post('/logout', Auth.closeSession, (req, res) => {
+  console.log('logging out...');
+  res.render('login');
+  // res.redirect('login');
+});
 
 
 /************************************************************/

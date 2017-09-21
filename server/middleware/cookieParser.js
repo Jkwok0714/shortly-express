@@ -1,4 +1,6 @@
 var http = require('http');
+const models = require('../models');
+
 
 const parseCookies = (req, res, next) => {
 
@@ -19,9 +21,19 @@ const parseCookies = (req, res, next) => {
         res.redirect('login');
     }else{
         //Check if the cookie is in the database
-        next();
+        models.Sessions.get({ hash: sessionHash }).
+          then((result) => {
+            if (result === undefined) {
+              res.redirect('login');
+            } else {
+              next();
+            }
+          }).catch((err) => {
+            console.error(err);
+            // res.redirect('login');
+          });
     }
-    
+
 };
 
 module.exports = parseCookies;
