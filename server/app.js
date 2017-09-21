@@ -5,6 +5,8 @@ const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
 const models = require('./models');
+const cookieParser = require('./middleware/cookieParser.js')
+
 
 const app = express();
 
@@ -15,19 +17,58 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
+//Add Cookie parse for every request
+//app.use(cookieParser);
 
+//Handle post request for login
+app.post('/login' , Auth.handleLogin, (req, res) => {
+  console.log("Succesful Login");
+  res.redirect('index');
+})
 
-app.get('/', 
+//Handle html for login page
+app.get('/login', 
+(req, res) => {
+  //Create cookie for login session
+  res.render('login');
+});
+
+//Handle html for sign up page'
+app.get('/signup', 
+(req, res) => {
+  res.render('signup');
+});
+
+//Handle sign up post
+app.post('/signup', (req, res) =>{
+  console.log(req.body);
+
+  var { username, password } = req.body;
+
+  //Create and save user
+  models.Users.create({ username, password })
+    .then((result) => {
+      console.log('The user was created successfully');
+      res.redirect('index');
+    }) //Log success, take user to index page
+    .catch((err) => {
+      console.log(err);
+    })
+})
+
+//Handle html for main page
+app.get('/', cookieParser,
 (req, res) => {
   res.render('index');
 });
 
-app.get('/create', 
+
+app.get('/create', cookieParser,
 (req, res) => {
   res.render('index');
 });
 
-app.get('/links', 
+app.get('/links', cookieParser,
 (req, res, next) => {
   models.Links.getAll()
     .then(links => {
@@ -38,7 +79,7 @@ app.get('/links',
     });
 });
 
-app.post('/links', 
+app.post('/links', cookieParser,
 (req, res, next) => {
   var url = req.body.url;
   if (!models.Links.isValidUrl(url)) {

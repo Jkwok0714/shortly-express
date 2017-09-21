@@ -11,6 +11,7 @@ const Users = require('./user');
 class Sessions extends Model {
   constructor() {
     super('sessions');
+    this.user;
   }
 
   /**
